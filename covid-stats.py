@@ -1,9 +1,22 @@
 #!/usr/bin/python
 
+
 import argparse
 import json
 import datetime
 import operator
+
+def getCountiesDelta(startDict, endDict):
+    counties = {}
+    for x in startDict["countyInfectionsNumbers"].keys():
+        counties[x] = endDict["countyInfectionsNumbers"][x] - startDict["countyInfectionsNumbers"][x]
+
+    sorted_counties = sorted(counties.items(), key=operator.itemgetter(1), reverse=True)
+
+    print ("> Top 5 growth between %s and %s" %(startDict["parsedOnString"], endDict["parsedOnString"]))
+    for x in range(0, 5):
+        print ("%d: %s" %(x + 1, sorted_counties[x]))
+    
 
 parser = argparse.ArgumentParser(description='Statistici Covid')
 parser.add_argument('-f', '--file', help='Fisier cu date', type=str)
@@ -23,13 +36,6 @@ yday = dt - datetime.timedelta(days=1)
 str_yesterday = yday.strftime('%Y-%m-%d')
 print ("Yesterday: %s" %str_yesterday)
 
-counties = {}
+yesterdayStats = json["historicalData"][str_yesterday]
 
-data_yesterday = json["historicalData"][str_yesterday]
-
-for x in todayStats["countyInfectionsNumbers"].keys():
-    counties[x] = todayStats["countyInfectionsNumbers"][x] - data_yesterday["countyInfectionsNumbers"][x]
-
-sorted_counties = sorted(counties.items(), key=operator.itemgetter(1))
-
-print (sorted_counties)
+getCountiesDelta(yesterdayStats, todayStats)
