@@ -6,15 +6,15 @@ import json
 import datetime
 import operator
 
-def getCountiesDelta(startDict, endDict):
+def getCountiesDelta(startDict, endDict, numEntries = 5):
     counties = {}
     for x in startDict["countyInfectionsNumbers"].keys():
         counties[x] = endDict["countyInfectionsNumbers"][x] - startDict["countyInfectionsNumbers"][x]
 
     sorted_counties = sorted(counties.items(), key=operator.itemgetter(1), reverse=True)
 
-    print ("> Top 5 growth between %s and %s" %(startDict["parsedOnString"], endDict["parsedOnString"]))
-    for x in range(0, 5):
+    print ("> Top %d growth between %s and %s" %(numEntries, startDict["parsedOnString"], endDict["parsedOnString"]))
+    for x in range(0, numEntries):
         print ("%d: %s" %(x + 1, sorted_counties[x]))
     
 
@@ -39,3 +39,13 @@ print ("Yesterday: %s" %str_yesterday)
 yesterdayStats = json["historicalData"][str_yesterday]
 
 getCountiesDelta(yesterdayStats, todayStats)
+
+crtDay = yday
+dayStats = yesterdayStats
+for x in range(0, 5):
+    dayBefore = crtDay - datetime.timedelta(days=1)
+    dayBeforeStr = dayBefore.strftime('%Y-%m-%d')
+    dayBeforeStats = json["historicalData"][dayBeforeStr]
+    getCountiesDelta(dayBeforeStats, dayStats)
+    dayStats = dayBeforeStats
+    crtDay = dayBefore
