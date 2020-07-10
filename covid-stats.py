@@ -5,6 +5,9 @@ import argparse
 import json
 import datetime
 import operator
+import requests
+
+url="https://datelazi.ro/latestData.json"
 
 def getCountiesDelta(startDict, endDict, numEntries = 5):
     counties = {}
@@ -13,39 +16,55 @@ def getCountiesDelta(startDict, endDict, numEntries = 5):
 
     sorted_counties = sorted(counties.items(), key=operator.itemgetter(1), reverse=True)
 
-    print ("> Top %d growth between %s and %s" %(numEntries, startDict["parsedOnString"], endDict["parsedOnString"]))
+    cases_delta = endDict["numberInfected"] - startDict["numberInfected"]
+    print ("> Delta between %s and %s: %d" %(startDict["parsedOnString"], endDict["parsedOnString"], cases_delta))
+
+    print (">> Top %d growth by county" %(numEntries))
     for x in range(0, numEntries):
         print ("%d: %s" %(x + 1, sorted_counties[x]))
     
 
 parser = argparse.ArgumentParser(description='Statistici Covid')
 parser.add_argument('-f', '--file', help='Fisier cu date', type=str)
+parser.add_argument('-w', '--week', help='Top pe ultima saptamana', default=False, action='store_true')
+parser.add_argument('-t', '--top', help='Cate entry-uri', type=int, default = 5)
 args = parser.parse_args()
 
-print ("Parsing %s" %args.file)
+if args.file:
+    print ("Parsing %s" %args.file)
 
-f = open(args.file)
-json = json.loads(f.read())
+    f = open(args.file)
+    json = json.loads(f.read())
+else:
+    print ("Fetching latest data from %s" %url)
+    r = requests.get(url)
+    json = json.loads(r.content)
 
 todayStats = json["currentDayStats"]
 today = todayStats["parsedOnString"]
+print ("Last update: %s" %json["lasUpdatedOnString"])
 print ("Date: %s Infected: %s Cured: %s Died: %s" %(today, todayStats["numberInfected"], todayStats["numberCured"], todayStats["numberDeceased"]))
 
 dt = datetime.datetime.strptime(today, '%Y-%m-%d')
-yday = dt - datetime.timedelta(days=1)
-str_yesterday = yday.strftime('%Y-%m-%d')
-print ("Yesterday: %s" %str_yesterday)
+if args.week:
+    prev = dt - datetime.timedelta(days=7)
+    str_prev = prev.strftime('%Y-%m-%d')
+    prevStats = json["historicalData"][str_prev]
+    getCountiesDelta(prevStats, todayStats, args.top)
+else:
+    yday = dt - datetime.timedelta(days=1)
+    str_yesterday = yday.strftime('%Y-%m-%d')
 
-yesterdayStats = json["historicalData"][str_yesterday]
+    yesterdayStats = json["historicalData"][str_yesterday]
 
-getCountiesDelta(yesterdayStats, todayStats)
+    getCountiesDelta(yesterdayStats, todayStats, args.top)
 
-crtDay = yday
-dayStats = yesterdayStats
-for x in range(0, 5):
-    dayBefore = crtDay - datetime.timedelta(days=1)
-    dayBeforeStr = dayBefore.strftime('%Y-%m-%d')
-    dayBeforeStats = json["historicalData"][dayBeforeStr]
-    getCountiesDelta(dayBeforeStats, dayStats)
-    dayStats = dayBeforeStats
-    crtDay = dayBefore
+    crtDay = yday
+    dayStats = yesterdayStats
+    for x in range(0, 5):
+        dayBefore = crtDay - datetime.timedelta(days=1)
+        dayBeforeStr = dayBefore.strftime('%Y-%m-%d')
+        dayBeforeStats = json["historicalData"][dayBeforeStr]
+        getCountiesDelta(dayBeforeStats, dayStats, args.top)
+        dayStats = dayBeforeStats
+        crtDay = dayBefore
