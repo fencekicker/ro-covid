@@ -7,7 +7,8 @@ import datetime
 import operator
 import requests
 
-url="https://datelazi.ro/latestData.json"
+# url="https://datelazi.ro/latestData.json"
+url="https://di5ds1eotmbx1.cloudfront.net/latestData.json"
 
 def getCountiesDelta(startDict, endDict, numEntries = 5):
     counties = {}
