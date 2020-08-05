@@ -29,6 +29,7 @@ parser = argparse.ArgumentParser(description='Statistici Covid')
 parser.add_argument('-f', '--file', help='Fisier cu date', type=str)
 parser.add_argument('-w', '--week', help='Top pe ultima saptamana', default=False, action='store_true')
 parser.add_argument('-t', '--top', help='Cate entry-uri', type=int, default = 5)
+parser.add_argument('-d', '--days', help='Numar zile in urma de afisat', type=int, default = 1)
 args = parser.parse_args()
 
 if args.file:
@@ -62,7 +63,7 @@ else:
 
     crtDay = yday
     dayStats = yesterdayStats
-    for x in range(0, 5):
+    for x in range(0, args.days - 1):
         dayBefore = crtDay - datetime.timedelta(days=1)
         dayBeforeStr = dayBefore.strftime('%Y-%m-%d')
         dayBeforeStats = json["historicalData"][dayBeforeStr]
