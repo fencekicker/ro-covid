@@ -30,6 +30,7 @@ parser.add_argument('-f', '--file', help='Fisier cu date', type=str)
 parser.add_argument('-w', '--week', help='Top pe ultima saptamana', default=False, action='store_true')
 parser.add_argument('-t', '--top', help='Cate entry-uri', type=int, default = 5)
 parser.add_argument('-d', '--days', help='Numar zile in urma de afisat', type=int, default = 1)
+parser.add_argument('-D', '--days-delta', help='Afiseaza total si top pe ultimele X zile', type=int, default=1)
 args = parser.parse_args()
 
 if args.file:
@@ -47,9 +48,15 @@ today = todayStats["parsedOnString"]
 print ("Last update: %s" %json["lasUpdatedOnString"])
 print ("Date: %s Infected: %s Cured: %s Died: %s" %(today, todayStats["numberInfected"], todayStats["numberCured"], todayStats["numberDeceased"]))
 
-dt = datetime.datetime.strptime(today, '%Y-%m-%d')
+days_delta = 1
 if args.week:
-    prev = dt - datetime.timedelta(days=7)
+    days_delta = 7
+elif args.days_delta:
+    days_delta = args.days_delta
+
+dt = datetime.datetime.strptime(today, '%Y-%m-%d')
+if days_delta > 1:
+    prev = dt - datetime.timedelta(days=days_delta)
     str_prev = prev.strftime('%Y-%m-%d')
     prevStats = json["historicalData"][str_prev]
     getCountiesDelta(prevStats, todayStats, args.top)
