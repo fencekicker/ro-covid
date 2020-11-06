@@ -14,7 +14,13 @@ requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-S
 def getCountiesDelta(startDict, endDict, numEntries = 5):
     counties = {}
     for x in startDict["countyInfectionsNumbers"].keys():
-        counties[x] = endDict["countyInfectionsNumbers"][x] - startDict["countyInfectionsNumbers"][x]
+        startVal = 0
+        endVal = 0
+        if x in startDict["countyInfectionsNumbers"].keys():
+            startVal = startDict["countyInfectionsNumbers"][x]
+        if x in endDict["countyInfectionsNumbers"].keys():
+            endVal = endDict["countyInfectionsNumbers"][x]
+        counties[x] = endVal - startVal
 
     sorted_counties = sorted(counties.items(), key=operator.itemgetter(1), reverse=True)
 
