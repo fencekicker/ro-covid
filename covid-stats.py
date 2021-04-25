@@ -7,8 +7,8 @@ import datetime
 import operator
 import requests
 
-url="https://datelazi.ro/latestData.json"
-# url="https://di5ds1eotmbx1.cloudfront.net/latestData.json"
+# url="https://datelazi.ro/latestData.json"
+url="https://d35p9e4fm9h3wo.cloudfront.net/latestData.json"
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-256-GCM-SHA384:ECDHE:!COMPLEMENTOFDEFAULT"
 
 def getCountiesDelta(startDict, endDict, numEntries = 5):
