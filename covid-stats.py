@@ -52,7 +52,8 @@ else:
 
 todayStats = json["currentDayStats"]
 today = todayStats["parsedOnString"]
-print ("Last update: %s" %json["lasUpdatedOnString"])
+if "lasUpdatedOnString" in json:
+    print ("Last update: %s" %json["lasUpdatedOnString"])
 print ("Date: %s Infected: %s Cured: %s Died: %s" %(today, todayStats["numberInfected"], todayStats["numberCured"], todayStats["numberDeceased"]))
 
 days_delta = 1
