@@ -25,7 +25,9 @@ def getCountiesDelta(startDict, endDict, numEntries = 5):
     sorted_counties = sorted(counties.items(), key=operator.itemgetter(1), reverse=True)
 
     cases_delta = endDict["numberInfected"] - startDict["numberInfected"]
+    deceased_delta = endDict["numberDeceased"] - startDict["numberDeceased"]
     print ("> Delta between %s and %s: %d" %(startDict["parsedOnString"], endDict["parsedOnString"], cases_delta))
+    print ("> Deceased: %d" %deceased_delta)
 
     print (">> Top %d growth by county" %(numEntries))
     for x in range(0, numEntries):
